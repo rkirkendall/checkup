@@ -1,7 +1,9 @@
 package checkup
 
-import "fmt"
-import s "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Phrase struct {
 	Include    []string
@@ -10,23 +12,28 @@ type Phrase struct {
 }
 
 //Define Risk Factor
-const RF_DEPRESSIVE_FEELINGS string = "Depressive Feelings"
-const RF_DEPRESSION_SYMPTOMS string = "Depression Symptoms"
-const RF_DRUG_ABUSE string = "Drug Abuse"
-const RF_PRIOR_SUICIDE_ATTEMPTS string = "Prior Suicide Attempts"
-const RF_SUICIDE_AROUND_INDIVIDUAL string = "Suicide Around Individual"
-const RF_SUICIDE_IDEATION string = "Suicide Ideation"
-const RF_SELF_HARM string = "Self-Harm"
-const RF_BULLYING string = "Bullying"
-const RF_GUN_OWNERSHIP string = "Gun Ownership"
-const RF_PSYCHOLOGICAL_DISORDERS string = "Psychological Disorders"
-const RF_FAMILY_VIOLENCE_DISCORD string = "Family Violence/Discord"
-const RF_IMPULSIVITY string = "Impulsivity"
 
-var phrases []Phrase
-var globalExcludes []string
+const (
+	RFDepressiveFeelings      string = "Depressive Feelings"
+	RFDepressionSymptoms      string = "Depression Symptoms"
+	RFDrugAbuse               string = "Drug Abuse"
+	RFPriorSuicideAttempts    string = "Prior Suicide Attempts"
+	RFSuicideAroundIndividual string = "Suicide Around Individual"
+	RFSuicideIdeation         string = "Suicide Ideation"
+	RFSelfHarm                string = "Self-Harm"
+	RFBullying                string = "Bullying"
+	RFGunOwnership            string = "Gun Ownership"
+	RFPsychologicalDisorders  string = "Psychological Disorders"
+	RFFamilyViolenceDiscord   string = "Family Violence/Discord"
+	RFImpulsivity             string = "Impulsivity"
+)
 
-func BuildSelfHarmPhrases() {
+var (
+	phrases        []Phrase
+	globalExcludes []string
+)
+
+func buildSelfHarmPhrases() {
 	phrases = []Phrase{}
 	//globalExcludes := []string{"lol"}
 	add([]string{"feel", "alone", "depressed"}, []string{})
@@ -58,27 +65,19 @@ func BuildSelfHarmPhrases() {
 	fmt.Println(phrases)
 }
 
-func TestContains() string {
-	if contains("aa", "aaa") {
-		return "compare works"
-	} else {
-		return "compare is broken"
-	}
-}
-
-func TestPhrases() int {
-	return len(phrases)
-}
-
 func Scan(tweet string) bool {
+	if len(phrases) == 0 {
+		buildSelfHarmPhrases()
+	}
+
 	for _, phrase := range phrases {
 		//Make everything upper case
-		tweet = s.ToUpper(tweet)
+		tweet = strings.ToUpper(tweet)
 		var includeMatch bool = true
 		for _, ph := range phrase.Include {
-			ph = s.ToUpper(ph)
+			ph = strings.ToUpper(ph)
 			//c.Infof(fmt.Sprintln(tweet, ":", ph))
-			if contains(ph, tweet) == false {
+			if strings.Contains(tweet, ph) {
 				includeMatch = false
 				break
 			}
@@ -86,8 +85,8 @@ func Scan(tweet string) bool {
 
 		var excludeMatch bool = true
 		for _, ph := range phrase.Exclude {
-			ph = s.ToUpper(ph)
-			if contains(ph, tweet) {
+			ph = strings.ToUpper(ph)
+			if strings.Contains(tweet, ph) {
 				excludeMatch = false
 				break
 			}
@@ -98,10 +97,6 @@ func Scan(tweet string) bool {
 		}
 	}
 	return false
-}
-
-func contains(phrase string, text string) bool {
-	return s.Contains(text, phrase)
 }
 
 func add(include []string, exclude []string) {
