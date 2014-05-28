@@ -1,7 +1,6 @@
 package checkup
 
-import "fmt"
-import s "strings"
+import "strings"
 
 type Phrase struct {
 	Include    []string
@@ -23,10 +22,45 @@ const RF_PSYCHOLOGICAL_DISORDERS string = "Psychological Disorders"
 const RF_FAMILY_VIOLENCE_DISCORD string = "Family Violence/Discord"
 const RF_IMPULSIVITY string = "Impulsivity"
 
-var phrases []Phrase
-var globalExcludes []string
+var (
+	phrases        []Phrase = []Phrase{}
+	globalExcludes []string = []string{}
+)
 
-func BuildSelfHarmPhrases() {
+func Scan(tweet string) bool {
+	if len(phrases) == 0 {
+		buildSelfHarmPhrases()
+	}
+	for _, phrase := range phrases {
+		//Make everything upper case
+		tweet = strings.ToUpper(tweet)
+		var includeMatch bool = true
+		for _, ph := range phrase.Include {
+			ph = strings.ToUpper(ph)
+			//c.Infof(fmt.Sprintln(tweet, ":", ph))
+			if strings.Contains(tweet, ph) == false {
+				includeMatch = false
+				break
+			}
+		}
+
+		var excludeMatch bool = true
+		for _, ph := range phrase.Exclude {
+			ph = strings.ToUpper(ph)
+			if strings.Contains(tweet, ph) {
+				excludeMatch = false
+				break
+			}
+		}
+
+		if includeMatch && excludeMatch {
+			return true
+		}
+	}
+	return false
+}
+
+func buildSelfHarmPhrases() {
 	phrases = []Phrase{}
 	//globalExcludes := []string{"lol"}
 	add([]string{"feel", "alone", "depressed"}, []string{})
@@ -55,53 +89,6 @@ func BuildSelfHarmPhrases() {
 	add([]string{"diagnosed", "ocd"}, []string{"http"})
 	add([]string{"dad", "fight", "again"}, []string{"food"})
 	add([]string{"parents", "fight", "again"}, []string{"food"})
-	fmt.Println(phrases)
-}
-
-func TestContains() string {
-	if contains("aa", "aaa") {
-		return "compare works"
-	} else {
-		return "compare is broken"
-	}
-}
-
-func TestPhrases() int {
-	return len(phrases)
-}
-
-func Scan(tweet string) bool {
-	for _, phrase := range phrases {
-		//Make everything upper case
-		tweet = s.ToUpper(tweet)
-		var includeMatch bool = true
-		for _, ph := range phrase.Include {
-			ph = s.ToUpper(ph)
-			//c.Infof(fmt.Sprintln(tweet, ":", ph))
-			if contains(ph, tweet) == false {
-				includeMatch = false
-				break
-			}
-		}
-
-		var excludeMatch bool = true
-		for _, ph := range phrase.Exclude {
-			ph = s.ToUpper(ph)
-			if contains(ph, tweet) {
-				excludeMatch = false
-				break
-			}
-		}
-
-		if includeMatch && excludeMatch {
-			return true
-		}
-	}
-	return false
-}
-
-func contains(phrase string, text string) bool {
-	return s.Contains(text, phrase)
 }
 
 func add(include []string, exclude []string) {
