@@ -7,6 +7,4 @@ checkup is a package for actively monitoring Twitter feeds to detect suicidal la
 
 Research
 --------
-checkup was inspired by BYU's research:
-
-http://news.byu.edu/archive13-oct-suicide.aspx
+checkup was inspired by [BYU's research](http://news.byu.edu/archive13-oct-suicide.aspx)
