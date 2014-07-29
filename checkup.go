@@ -57,7 +57,9 @@ var (
 	globalExcludes []string = []string{}
 )
 
-//
+// Scan checks to see if a qualified tweet contains a flag phrase.
+// Tweets are disqualified if they have already been interacted with or if the user is protected.
+// It returns false if a tweet is disqualified, or it returns the CheckForPhrases function.
 func Scan(tweet anaconda.Tweet, httpClient *http.Client) bool {
 	var favorited, retweeted, isReply, verified, protected bool
 	if tweet.FavoriteCount > 0 {
@@ -76,7 +78,7 @@ func Scan(tweet anaconda.Tweet, httpClient *http.Client) bool {
 		protected = true
 	}
 
-	//1. If the tweet has recieved interaction or if the author is verified, don't flag.
+	//1. If the tweet has received interaction or if the author is verified, don't flag.
 	if favorited || retweeted || isReply || verified || protected {
 		return false
 	}
@@ -85,6 +87,9 @@ func Scan(tweet anaconda.Tweet, httpClient *http.Client) bool {
 	containsFlagPhrase := CheckForPhrases(tweet.Text)
 	return containsFlagPhrase
 }
+
+// CheckPreviousTweetSentiments performs a sentiment classification on a slice containing
+// a user's previous tweets. It returns true if over 50% of the tweets are negative.
 func CheckPreviousTweetSentiments(tweets []string, httpClient *http.Client) bool {
 	if len(tweets) == 0 {
 		return true
@@ -107,6 +112,8 @@ func CheckPreviousTweetSentiments(tweets []string, httpClient *http.Client) bool
 	return negativeHistory
 }
 
+// CheckForPhrases builds the list of pre-defined self-harm phrases if necessary and then
+// checks to see if a tweet contains any phrases. It returns true if a phrase is found.
 func CheckForPhrases(tweetText string) bool {
 	if len(phrases) == 0 {
 		buildSelfHarmPhrases()
@@ -138,6 +145,7 @@ func CheckForPhrases(tweetText string) bool {
 	return false
 }
 
+//cleanTweet is series of simple string operations designed to improve a tweet's detection and classification accuracy.
 func cleanTweet(tweet string) []string {
 	r := strings.NewReplacer("!", " ",
 		".", " ",
@@ -155,6 +163,9 @@ func cleanTweet(tweet string) []string {
 	words := strings.Fields(tweet)
 	return words
 }
+
+//ClassifySentiment classifies a string as having either a positive or negative sentiment.
+// Returns 1 for positive, 0 for negative.
 func ClassifySentiment(text string, httpClient *http.Client) int64 {
 	urlEncoded := url.QueryEscape(text)
 	if httpClient == nil {
@@ -181,6 +192,7 @@ func ClassifySentiment(text string, httpClient *http.Client) int64 {
 	}
 }
 
+//Create the list of self harm-phrases.
 func buildSelfHarmPhrases() {
 	phrases = []Phrase{}
 	//globalExcludes := []string{"lol"}
