@@ -1,3 +1,21 @@
+// Copyright 2014 Ricky Kirkendall
+
+/*
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+// Package checkup implements functions to analyze input from social media sources with the goal of detecting suicidal risk factors.
 package checkup
 
 import (
@@ -9,7 +27,7 @@ import (
 	"strings"
 )
 
-//Define Risk Factor
+// Risk factors for suicidal behavior. Not currently implemented.
 const (
 	RFDepressiveFeelings      string = "Depressive Feelings"
 	RFDepressionSymptoms      string = "Depression Symptoms"
@@ -25,6 +43,9 @@ const (
 	RFImpulsivity             string = "Impulsivity"
 )
 
+// Phrases can have included words, excluded words and an associated risk factor.
+// In order for an input to match a phrase it must contain all of the included words
+// and none of the excluded words.
 type Phrase struct {
 	Include    []string
 	Exclude    []string
@@ -36,6 +57,7 @@ var (
 	globalExcludes []string = []string{}
 )
 
+//
 func Scan(tweet anaconda.Tweet, httpClient *http.Client) bool {
 	var favorited, retweeted, isReply, verified, protected bool
 	if tweet.FavoriteCount > 0 {
