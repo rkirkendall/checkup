@@ -4,7 +4,9 @@ checkup
 
 checkup is a package for actively monitoring Twitter feeds to detect suicidal language.
 
-
+Dependencies
+------------
+checkup uses [the anaconda package as a Twitter client](https://github.com/ChimeraCoder/anaconda) 
 Research
 --------
 checkup was inspired by [BYU's research](http://news.byu.edu/archive13-oct-suicide.aspx)
