@@ -9,7 +9,6 @@ Example
 ```Go
 for _, tweet := range tweets {
 	//Scan tweet for flag phrases
-	
 	flag := checkup.Scan(tweet, nil)
 
 	//If there is a flag, check history of tweets for negative sentiments
