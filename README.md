@@ -8,7 +8,7 @@ Example
 -------
 ```Go
 for _, tweet := range tweets {
-  //Scan tweet for flag phrases
+	//Scan tweet for flag phrases
 	
 	flag := checkup.Scan(tweet, nil)
 
