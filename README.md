@@ -6,7 +6,7 @@ checkup is a package for actively monitoring Twitter feeds to detect suicidal la
 
 Dependencies
 ------------
-checkup uses [the anaconda package as a Twitter client](https://github.com/ChimeraCoder/anaconda) 
+checkup uses [the anaconda package](https://github.com/ChimeraCoder/anaconda) as a Twitter client
 Research
 --------
 checkup was inspired by [BYU's research](http://news.byu.edu/archive13-oct-suicide.aspx)
