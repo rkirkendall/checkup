@@ -1,62 +1,42 @@
-package checkup
+package checkup_test
 
 import (
-	"encoding/csv"
-	"fmt"
-	"io"
-	"os"
-	"testing"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/r1cky1337/checkup"
 )
 
-// testing data link:
-// https://docs.google.com/spreadsheets/d/1rY_evVtZO-C64EFUeQpr3jawVOFxVbMnfkBeedWTZGw/pubhtml
-// last tweets: http://pastebin.com/QpV9RThH
+var _ = Describe("Checkup", func() {
+	It("Should classify the sentiment of a tweet", func() {
+		negativeTweet := "I am mad. I hate everything."
+		positiveTweet := "love life"
+		negativeTweetScore := checkup.ClassifySentiment(negativeTweet, nil)
+		positiveTweetScore := checkup.ClassifySentiment(positiveTweet, nil)
+		Expect(positiveTweetScore).To(Equal(int64(1)))
+		Expect(negativeTweetScore).To(Equal(int64(0)))
+	})
 
-type testPhrase struct {
-	Text string
-	Flag bool
-}
+	It("Should scan a tweet for flag phrases", func() {
+		testTweet := "I want to kill myself"
+		testTweet2 := "What a great day!"
+		ret := checkup.CheckForPhrases(testTweet)
+		ret2 := checkup.CheckForPhrases(testTweet2)
+		Expect(ret).To(Equal(true))
+		Expect(ret2).To(Equal(false))
+	})
 
-func TestTweets(t *testing.T) {
-	phrases, err := load()
-	if err != nil {
-		panic(err)
-	}
+	It("Should assess a short history of tweets to have a predominately negative sentiment", func() {
+		pos := []string{"beautiful day",
+			"love life",
+			"everything is perfect"}
+		negs := []string{"Today has gone terribly wrong",
+			"I never thought it could get this bad",
+			"Where did I go wrong"}
 
-	for _, p := range phrases {
-		if p.Flag != Scan(p.Text) {
-			t.Errorf("%v should have been flagged: %v", p.Text, p.Flag)
-		}
-	}
-}
+		retNeg := checkup.CheckPreviousTweetSentiments(negs, nil)
+		Expect(retNeg).To(Equal(true))
 
-func load() ([]*testPhrase, error) {
-	pairs := []*testPhrase{}
-	file, err := os.Open("phrases.csv")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return []*testPhrase{}, err
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-	for {
-		record, err := reader.Read()
-		if err == io.EOF {
-			break
-		} else if err != nil || len(record) != 2 {
-			fmt.Println("Error:", err)
-			return []*testPhrase{}, err
-		}
-
-		if record[0] != "Text" {
-			flag := false
-			if record[1] == "Yes" {
-				flag = true
-			}
-
-			pairs = append(pairs, &testPhrase{record[0], flag})
-		}
-	}
-	return pairs, nil
-}
+		retPos := checkup.CheckPreviousTweetSentiments(pos, nil)
+		Expect(retPos).To(Equal(false))
+	})
+})
