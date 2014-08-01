@@ -1,7 +1,7 @@
 checkup
 =======
 [![Build Status](https://drone.io/github.com/r1cky1337/checkup/status.png)](https://drone.io/github.com/r1cky1337/checkup/latest)
-![godoc reference](http://b.repl.ca/v1/godoc-reference-blue.png)
+[![godoc reference](http://b.repl.ca/v1/godoc-reference-blue.png)](http://godoc.org/github.com/r1cky1337/checkup)
 
 checkup is a package for actively monitoring Twitter feeds to detect suicidal language.
 
